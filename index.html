@@ -329,6 +329,9 @@ button:disabled{ opacity: 0.45; cursor: not-allowed; }
   color: var(--accent);
   border-color: var(--accent-dim);
 }
+.header-gen-btn.full-width{
+  grid-column: 1 / -1;
+}
 #headers-preview canvas{
   max-width: 100%;
   display: block;
@@ -416,6 +419,7 @@ button:disabled{ opacity: 0.45; cursor: not-allowed; }
 <button class="ghost header-gen-btn" type="button" data-title="100 BETS">100 BETS</button>
 <button class="ghost header-gen-btn" type="button" data-title="50S BETS">50S BETS</button>
 <button class="ghost header-gen-btn" type="button" data-title="VOIDS">VOIDS</button>
+<button class="ghost header-gen-btn full-width" type="button" data-title="CLOSED">CLOSED</button>
 </div>
 <div class="row-actions">
 <span class="hint" id="headers-hint">pick a header to copy</span>
@@ -857,17 +861,24 @@ button:disabled{ opacity: 0.45; cursor: not-allowed; }
     const scale = 2;
     const fontSize = 15;
     const lineHeight = 24;
+    const smallFontSize = 11;
+    const smallLineHeight = 18;
     const padX = 28;
     const padY = 16;
     const font = `700 ${fontSize}px 'IBM Plex Mono', ui-monospace, monospace`;
+    const smallFont = `400 ${smallFontSize}px 'IBM Plex Mono', ui-monospace, monospace`;
 
     const bg = cssVar('--panel-alt') || '#22241a';
     const border = cssVar('--border') || '#3a3d2b';
     const textColor = cssVar('--text') || '#eae6d5';
+    const textDim = cssVar('--text-dim') || '#9a9d84';
     const accentColor = cssVar('--accent') || '#a3c02f';
 
-    const suffix = title === 'COPY ALL' ? '3d list' : '2d list';
-    const titleLine = `${title} ${suffix}`;
+    let suffix = null;
+    if (title === 'COPY ALL') suffix = '3d list';
+    else if (title !== 'CLOSED') suffix = '2d list';
+
+    const titleLine = suffix ? `${title} ${suffix}` : title;
     const timeStr = nextHourLabel();
     const dateStr = standardDate();
     const contentLines = [titleLine, timeStr, dateStr];
@@ -875,24 +886,29 @@ button:disabled{ opacity: 0.45; cursor: not-allowed; }
     const sep = '='.repeat(sepLen);
 
     const lines = [
-      { text: sep, accent: true },
-      { text: titleLine, accent: false },
-      { text: timeStr, accent: false },
-      { text: dateStr, accent: false },
-      { text: sep, accent: true }
+      { text: sep, accent: true, font, height: lineHeight },
+      { text: titleLine, accent: false, font, height: lineHeight },
+      { text: timeStr, accent: false, font, height: lineHeight },
+      { text: dateStr, accent: false, font, height: lineHeight },
+      { text: sep, accent: true, font, height: lineHeight }
     ];
+
+    if (title === 'CLOSED'){
+      lines.push({ text: 'bill will be sent shortly', accent: false, font: smallFont, dim: true, height: smallLineHeight });
+    }
 
     const measureCanvas = document.createElement('canvas');
     const mctx = measureCanvas.getContext('2d');
-    mctx.font = font;
     let maxWidth = 0;
     lines.forEach(l => {
+      mctx.font = l.font;
       const w = mctx.measureText(l.text).width;
       if (w > maxWidth) maxWidth = w;
     });
 
     const width = Math.ceil(maxWidth + padX * 2);
-    const height = Math.ceil(lines.length * lineHeight + padY * 2);
+    const totalHeight = lines.reduce((sum, l) => sum + l.height, 0);
+    const height = Math.ceil(totalHeight + padY * 2);
 
     const canvas = document.createElement('canvas');
     canvas.width = width * scale;
@@ -906,14 +922,15 @@ button:disabled{ opacity: 0.45; cursor: not-allowed; }
     ctx.lineWidth = 1;
     ctx.strokeRect(0.5, 0.5, width - 1, height - 1);
 
-    ctx.font = font;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     const cx = width / 2;
-    lines.forEach((l, i) => {
-      ctx.fillStyle = l.accent ? accentColor : textColor;
-      const y = padY + lineHeight * i + lineHeight / 2;
-      ctx.fillText(l.text, cx, y);
+    let y = padY;
+    lines.forEach(l => {
+      ctx.font = l.font;
+      ctx.fillStyle = l.accent ? accentColor : (l.dim ? textDim : textColor);
+      ctx.fillText(l.text, cx, y + l.height / 2);
+      y += l.height;
     });
 
     return canvas;
