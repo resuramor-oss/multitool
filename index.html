@@ -310,6 +310,30 @@ button:disabled{ opacity: 0.45; cursor: not-allowed; }
   gap: 8px;
   margin-top: 10px;
 }
+
+/* --- Headers --- */
+.header-btn-grid{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+@media (max-width: 480px){
+  .header-btn-grid{ grid-template-columns: 1fr; }
+}
+.header-gen-btn{
+  padding: 12px 10px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+.header-gen-btn.copied{
+  color: var(--accent);
+  border-color: var(--accent-dim);
+}
+#headers-preview canvas{
+  max-width: 100%;
+  display: block;
+  margin: 0 auto;
+}
 </style>
 </head>
 <body>
@@ -322,6 +346,7 @@ button:disabled{ opacity: 0.45; cursor: not-allowed; }
 <div class="tabbar">
 <button class="tab-btn active" id="tabCullBtn" type="button" data-tab="cull">Cull</button>
 <button class="tab-btn" id="tabTotalBtn" type="button" data-tab="total">Total</button>
+<button class="tab-btn" id="tabHeadersBtn" type="button" data-tab="headers">Headers</button>
 </div>
 
 <!-- ================= CULLER ================= -->
@@ -380,6 +405,31 @@ button:disabled{ opacity: 0.45; cursor: not-allowed; }
 </div>
 </div>
 
+<!-- ================= HEADERS ================= -->
+<div class="tab-panel" id="panel-headers">
+<div class="narrow">
+
+<section>
+<p class="section-label">Generates a centered header block — title, time (approximated to the 2PM / 5PM / 9PM cutoffs), and today's date — and copies it straight to your clipboard as an image.</p>
+<div class="header-btn-grid">
+<button class="ghost header-gen-btn" type="button" data-title="COPY ALL">COPY ALL</button>
+<button class="ghost header-gen-btn" type="button" data-title="100 BETS">100 BETS</button>
+<button class="ghost header-gen-btn" type="button" data-title="50S BETS">50S BETS</button>
+<button class="ghost header-gen-btn" type="button" data-title="VOIDS">VOIDS</button>
+</div>
+<div class="row-actions">
+<span class="hint" id="headers-hint">pick a header to copy</span>
+</div>
+</section>
+
+<section>
+<p class="section-label">Last generated</p>
+<div id="headers-preview"><p class="empty-ledger">— nothing generated yet —</p></div>
+</section>
+
+</div>
+</div>
+
 </div>
 
 <script>
@@ -396,10 +446,11 @@ button:disabled{ opacity: 0.45; cursor: not-allowed; }
     else root.setAttribute('data-theme', 'light');
   });
 
-  const tabBtns = [document.getElementById('tabCullBtn'), document.getElementById('tabTotalBtn')];
+  const tabBtns = [document.getElementById('tabCullBtn'), document.getElementById('tabTotalBtn'), document.getElementById('tabHeadersBtn')];
   const panels = {
     cull: document.getElementById('panel-cull'),
-    total: document.getElementById('panel-total')
+    total: document.getElementById('panel-total'),
+    headers: document.getElementById('panel-headers')
   };
   tabBtns.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -761,6 +812,162 @@ button:disabled{ opacity: 0.45; cursor: not-allowed; }
   // start with a single empty row
   addRow();
   refresh();
+})();
+
+/* ============================================================
+   Headers
+   ============================================================ */
+(function(){
+  const buttons = Array.from(document.querySelectorAll('.header-gen-btn'));
+  const hint = document.getElementById('headers-hint');
+  const preview = document.getElementById('headers-preview');
+
+  const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sept','Oct','Nov','Dec'];
+
+  function cssVar(name){
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  }
+
+  function timestampName(){
+    const d = new Date();
+    const pad = n => String(n).padStart(2, '0');
+    const mm = pad(d.getMonth() + 1);
+    const dd = pad(d.getDate());
+    const yy = pad(d.getFullYear() % 100);
+    const hh = pad(d.getHours());
+    const mi = pad(d.getMinutes());
+    const ss = pad(d.getSeconds());
+    return `${mm}${dd}${yy}-${hh}${mi}${ss}`;
+  }
+
+  function nextHourLabel(){
+    const h = new Date().getHours(); // 0-23
+    if (h < 14) return '2PM';
+    if (h < 17) return '5PM';
+    if (h < 21) return '9PM';
+    return '2PM'; // 9PM onward rolls to next day's first cutoff
+  }
+
+  function standardDate(){
+    const d = new Date();
+    return `${MONTHS[d.getMonth()]} ${d.getDate()} ${d.getFullYear()}`;
+  }
+
+  function buildHeaderCanvas(title){
+    const scale = 2;
+    const fontSize = 15;
+    const lineHeight = 24;
+    const padX = 28;
+    const padY = 16;
+    const font = `700 ${fontSize}px 'IBM Plex Mono', ui-monospace, monospace`;
+
+    const bg = cssVar('--panel-alt') || '#22241a';
+    const border = cssVar('--border') || '#3a3d2b';
+    const textColor = cssVar('--text') || '#eae6d5';
+    const accentColor = cssVar('--accent') || '#a3c02f';
+
+    const suffix = title === 'COPY ALL' ? '3d list' : '2d list';
+    const titleLine = `${title} ${suffix}`;
+    const timeStr = nextHourLabel();
+    const dateStr = standardDate();
+    const contentLines = [titleLine, timeStr, dateStr];
+    const sepLen = Math.max(13, ...contentLines.map(l => l.length + 2));
+    const sep = '='.repeat(sepLen);
+
+    const lines = [
+      { text: sep, accent: true },
+      { text: titleLine, accent: false },
+      { text: timeStr, accent: false },
+      { text: dateStr, accent: false },
+      { text: sep, accent: true }
+    ];
+
+    const measureCanvas = document.createElement('canvas');
+    const mctx = measureCanvas.getContext('2d');
+    mctx.font = font;
+    let maxWidth = 0;
+    lines.forEach(l => {
+      const w = mctx.measureText(l.text).width;
+      if (w > maxWidth) maxWidth = w;
+    });
+
+    const width = Math.ceil(maxWidth + padX * 2);
+    const height = Math.ceil(lines.length * lineHeight + padY * 2);
+
+    const canvas = document.createElement('canvas');
+    canvas.width = width * scale;
+    canvas.height = height * scale;
+    const ctx = canvas.getContext('2d');
+    ctx.scale(scale, scale);
+
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, width, height);
+    ctx.strokeStyle = border;
+    ctx.lineWidth = 1;
+    ctx.strokeRect(0.5, 0.5, width - 1, height - 1);
+
+    ctx.font = font;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const cx = width / 2;
+    lines.forEach((l, i) => {
+      ctx.fillStyle = l.accent ? accentColor : textColor;
+      const y = padY + lineHeight * i + lineHeight / 2;
+      ctx.fillText(l.text, cx, y);
+    });
+
+    return canvas;
+  }
+
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const title = btn.dataset.title;
+      const canvas = buildHeaderCanvas(title);
+
+      // update preview
+      preview.innerHTML = '';
+      const previewCanvas = canvas.cloneNode();
+      previewCanvas.getContext('2d').drawImage(canvas, 0, 0);
+      preview.appendChild(previewCanvas);
+
+      canvas.toBlob(async blob => {
+        if (!blob) return;
+
+        buttons.forEach(b => b.classList.remove('copied'));
+        let copied = false;
+
+        try {
+          if (navigator.clipboard && window.ClipboardItem) {
+            await navigator.clipboard.write([
+              new ClipboardItem({ 'image/png': blob })
+            ]);
+            copied = true;
+          }
+        } catch (e) {
+          copied = false;
+        }
+
+        if (copied){
+          btn.classList.add('copied');
+          hint.textContent = `"${title}" header copied to clipboard`;
+          hint.className = 'hint';
+        } else {
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `header-${title.replace(/\s+/g, '').toLowerCase()}-${timestampName()}.png`;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          URL.revokeObjectURL(url);
+          hint.textContent = `clipboard copy unsupported — "${title}" header downloaded instead`;
+          hint.className = 'hint warn';
+        }
+
+        setTimeout(() => btn.classList.remove('copied'), 1600);
+      }, 'image/png');
+    });
+  });
 })();
 </script>
 </body>
