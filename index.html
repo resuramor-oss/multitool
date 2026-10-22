@@ -6,379 +6,318 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg: #14150f;
-  --panel: #1c1e14;
-  --panel-alt: #22241a;
-  --border: #3a3d2b;
-  --border-soft: #2a2c1f;
-  --text: #eae6d5;
-  --text-dim: #9a9d84;
-  --text-faint: #676a56;
-  --accent: #a3c02f;
-  --accent-dim: #7a9124;
-  --warn: #d9954a;
+  color-scheme: dark;
+  /* Catppuccin Mocha (default) / Latte (light toggle) */
+  --md-primary: light-dark(#8839ef, #cba6f7);               /* mauve */
+  --md-on-primary: light-dark(#eff1f5, #1e1e2e);
+  --md-success: light-dark(#40a02b, #a6e3a1);               /* green */
+  --md-on-success: light-dark(#eff1f5, #1e1e2e);
+  --md-secondary-container: light-dark(#ccd0da, #313244);   /* surface0 */
+  --md-on-secondary-container: light-dark(#4c4f69, #cdd6f4);
+  --md-surface: light-dark(#e6e9ef, #181825);               /* mantle */
+  --md-surface-low: light-dark(#eff1f5, #1e1e2e);           /* base */
+  --md-surface-high: light-dark(#ccd0da, #313244);          /* surface0 */
+  --md-surface-highest: light-dark(#dce0e8, #11111b);       /* crust */
+  --md-on-surface: light-dark(#4c4f69, #cdd6f4);            /* text */
+  --md-on-surface-variant: light-dark(#6c6f85, #a6adc8);    /* subtext0 */
+  --md-outline: light-dark(#8c8fa1, #7f849c);               /* overlay1 */
+  --md-outline-variant: light-dark(#bcc0cc, #45475a);       /* surface1 */
+  --md-warn: light-dark(#fe640b, #fab387);                  /* peach */
+  --font: 'Roboto', 'Google Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
-:root:not([data-theme="light"]) { color-scheme: dark; }
-:root[data-theme="light"]{
-  --bg: #f4f2e8;
-  --panel: #ffffff;
-  --panel-alt: #ecead9;
-  --border: #c9c6ac;
-  --border-soft: #d9d6c0;
-  --text: #23241a;
-  --text-dim: #5b5d47;
-  --text-faint: #8a8c70;
-  --accent: #5c7a15;
-  --accent-dim: #46600f;
-  --warn: #a2621c;
-  color-scheme: light;
-}
-@media (prefers-color-scheme: light){
-  :root:not([data-theme="dark"]){
-    --bg: #f4f2e8;
-    --panel: #ffffff;
-    --panel-alt: #ecead9;
-    --border: #c9c6ac;
-    --border-soft: #d9d6c0;
-    --text: #23241a;
-    --text-dim: #5b5d47;
-    --text-faint: #8a8c70;
-    --accent: #5c7a15;
-    --accent-dim: #46600f;
-    --warn: #a2621c;
-    color-scheme: light;
-  }
-}
+:root[data-theme="light"]{ color-scheme: light; }
+
 * { box-sizing: border-box; }
 html, body { margin:0; padding:0; }
 body{
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--mono);
+  background: var(--md-surface);
+  color: var(--md-on-surface);
+  font-family: var(--font);
   font-size: 14px;
-  line-height: 1.5;
-  padding: 32px 16px 64px;
+  line-height: 20px;
+  letter-spacing: 0.25px;
+  padding: 16px 16px 64px;
+  -webkit-font-smoothing: antialiased;
 }
-.page{
-  max-width: 1180px;
-  margin: 0 auto;
-}
-.narrow{
-  max-width: 640px;
-  margin: 0 auto;
-}
+.page{ max-width: 640px; margin: 0 auto; }
+.narrow{ max-width: none; }
+
+/* top app bar */
 header{
-  margin-bottom: 20px;
   display:flex;
-  align-items: center;
+  align-items:center;
   justify-content: space-between;
   gap: 12px;
-  flex-wrap: wrap;
+  padding: 8px 4px 16px 8px;
 }
 h1{
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 28px;
+  line-height: 36px;
+  font-weight: 400;
+  letter-spacing: 0;
   margin: 0;
-  letter-spacing: 0.01em;
 }
-h1 .dim{ color: var(--text-dim); font-weight: 500; }
 .theme-toggle{
-  background: none;
-  border: 1px solid var(--border);
-  color: var(--text-dim);
-  font-family: var(--mono);
-  font-size: 12px;
-  padding: 4px 10px;
-  border-radius: 2px;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--md-on-surface-variant);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
 }
-.theme-toggle:hover{ color: var(--text); border-color: var(--text-dim); }
+.theme-toggle svg{ width: 24px; height: 24px; fill: currentColor; }
+.theme-toggle:hover{ background: color-mix(in srgb, var(--md-on-surface-variant) 12%, transparent); }
 
-/* tabs */
+/* primary tabs */
 .tabbar{
   display:flex;
-  gap: 6px;
-  margin-bottom: 18px;
-  border-bottom: 1px solid var(--border-soft);
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--md-outline-variant);
 }
 .tab-btn{
+  flex: 1;
+  position: relative;
+  height: 48px;
   background: none;
   border: none;
-  border-bottom: 2px solid transparent;
-  color: var(--text-dim);
-  font-family: var(--mono);
-  font-size: 13px;
-  font-weight: 600;
-  padding: 8px 4px;
-  margin-bottom: -1px;
+  border-radius: 16px 16px 0 0;
+  color: var(--md-on-surface-variant);
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.1px;
   cursor: pointer;
 }
-.tab-btn:hover{ color: var(--text); }
-.tab-btn.active{
-  color: var(--accent);
-  border-bottom-color: var(--accent);
+.tab-btn:hover{
+  background: color-mix(in srgb, var(--md-on-surface) 8%, transparent);
+  color: var(--md-on-surface);
+}
+.tab-btn.active{ color: var(--md-primary); }
+.tab-btn.active::after{
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -1px;
+  width: 48px;
+  height: 3px;
+  transform: translateX(-50%);
+  border-radius: 3px 3px 0 0;
+  background: var(--md-primary);
 }
 .tab-panel{ display: none; }
 .tab-panel.active{ display: block; }
 
+/* cards */
 section{
-  background: var(--panel);
-  border: 1px solid var(--border-soft);
-  border-radius: 3px;
-  padding: 18px;
-  margin-bottom: 18px;
+  background: var(--md-surface-low);
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 16px;
 }
 .section-label{
   font-size: 12px;
-  color: var(--text-dim);
-  margin: 0 0 10px;
+  line-height: 16px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  color: var(--md-on-surface-variant);
+  margin: 0 0 12px;
 }
+
+/* outlined text field */
 textarea{
   width: 100%;
-  min-height: 110px;
+  min-height: 120px;
   resize: vertical;
-  background: var(--panel-alt);
-  border: 1px solid var(--border);
-  border-radius: 2px;
-  color: var(--text);
+  background: transparent;
+  border: 1px solid var(--md-outline);
+  border-radius: 12px;
+  color: var(--md-on-surface);
   font-family: var(--mono);
-  font-size: 12.5px;
-  padding: 10px;
+  font-size: 13px;
+  line-height: 20px;
+  padding: 14px 16px;
 }
-textarea:focus, input:focus, button:focus-visible{
-  outline: 2px solid var(--accent);
-  outline-offset: 1px;
+textarea::placeholder{ color: var(--md-on-surface-variant); opacity: 0.7; }
+textarea:hover{ border-color: var(--md-on-surface); }
+textarea:focus{
+  outline: none;
+  border-color: var(--md-primary);
+  box-shadow: inset 0 0 0 1px var(--md-primary);
 }
+button:focus-visible{ outline: 2px solid var(--md-primary); outline-offset: 2px; }
+
 .row-actions{
   display:flex;
   align-items:center;
   justify-content: space-between;
-  gap: 10px;
-  margin-top: 12px;
+  gap: 12px;
+  margin-top: 16px;
   flex-wrap: wrap;
 }
-.hint{
-  font-size: 12px;
-  color: var(--text-faint);
-}
-.hint.warn{ color: var(--warn); }
+.hint{ font-size: 12px; line-height: 16px; color: var(--md-on-surface-variant); }
+.hint.warn{ color: var(--md-warn); }
+
+/* buttons */
 button.primary{
-  background: var(--accent);
-  color: #14150f;
+  height: 40px;
+  padding: 0 24px;
   border: none;
-  font-family: var(--mono);
-  font-weight: 700;
-  font-size: 13px;
-  padding: 8px 16px;
-  border-radius: 2px;
+  border-radius: 20px;
+  background: var(--md-primary);
+  color: var(--md-on-primary);
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.1px;
   cursor: pointer;
 }
-button.primary:hover:not(:disabled){ background: var(--accent-dim); }
-button.primary:disabled{
-  background: var(--border);
-  color: var(--text-faint);
-  cursor: not-allowed;
+button.primary:hover:not(:disabled){
+  background: color-mix(in srgb, var(--md-on-primary) 8%, var(--md-primary));
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
 }
 button.ghost{
-  background: none;
-  border: 1px solid var(--border);
-  color: var(--text-dim);
-  font-family: var(--mono);
-  font-size: 12px;
-  padding: 7px 12px;
-  border-radius: 2px;
+  height: 40px;
+  padding: 0 20px;
+  border: 1px solid var(--md-outline);
+  border-radius: 20px;
+  background: transparent;
+  color: var(--md-primary);
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.1px;
   cursor: pointer;
 }
-button.ghost:hover:not(:disabled){ color: var(--text); border-color: var(--text-dim); }
-button:disabled{ opacity: 0.45; cursor: not-allowed; }
+button.ghost:hover:not(:disabled){
+  background: color-mix(in srgb, var(--md-primary) 8%, transparent);
+}
+button:disabled{ opacity: 0.38; cursor: not-allowed; }
 
-/* --- Culler --- */
-.cull-grid{
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-@media (max-width: 820px){
-  .cull-grid{ grid-template-columns: 1fr; }
-}
-.col-head{
-  display:flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: 8px;
-}
-.col-head label{
-  font-size: 11.5px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--text-dim);
-}
-.count{ font-size: 12px; color: var(--text-faint); }
-.cull-ta{ height: 480px; }
-.cull-ta[readonly]{ color: var(--accent); }
-
-/* --- Tally slots --- */
-.slots{
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
+/* total entries */
+.slots{ display:flex; flex-direction:column; gap: 8px; }
 .slot{
   display:grid;
-  grid-template-columns: 22px 1fr 26px;
-  align-items: center;
+  grid-template-columns: 28px 1fr 36px;
+  align-items:center;
   gap: 8px;
-  background: var(--panel-alt);
-  border: 1px solid var(--border-soft);
-  border-radius: 2px;
-  padding: 6px 8px;
+  background: var(--md-surface-high);
+  border-radius: 12px;
+  padding: 4px 4px 4px 14px;
 }
-.slot .idx{
-  color: var(--text-faint);
-  font-size: 12px;
-  text-align: right;
-}
+.slot:focus-within{ box-shadow: inset 0 0 0 2px var(--md-primary); }
+.slot .idx{ color: var(--md-on-surface-variant); font-size: 12px; text-align: left; }
 .slot input{
-  background: none;
-  border: none;
-  color: var(--text);
-  font-family: var(--mono);
-  font-size: 13px;
-  padding: 4px 2px;
   width: 100%;
-  border-bottom: 1px solid transparent;
-}
-.slot input.val{
-  text-align: right;
-  font-weight: 600;
-}
-.slot input:focus{
-  border-bottom: 1px solid var(--accent);
-  outline: none;
-}
-.slot.filled{ border-color: var(--border); }
-.slot .rm{
   background: none;
   border: none;
-  color: var(--text-faint);
+  color: var(--md-on-surface);
   font-family: var(--mono);
   font-size: 15px;
-  line-height: 1;
-  cursor: pointer;
-  padding: 2px;
+  font-weight: 500;
+  text-align: right;
+  padding: 10px 4px;
 }
-.slot .rm:hover{ color: var(--warn); }
+.slot input:focus{ outline: none; }
+.slot.filled{ background: color-mix(in srgb, var(--md-primary) 16%, var(--md-surface-high)); }
+.slot .rm{
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  color: var(--md-on-surface-variant);
+  font-size: 20px;
+  line-height: 1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor: pointer;
+}
+.slot .rm:hover{
+  background: color-mix(in srgb, var(--md-on-surface) 10%, transparent);
+  color: var(--md-on-surface);
+}
 .add-row{
   display:flex;
   align-items:center;
   justify-content:center;
-  gap: 6px;
+  width: 100%;
+  height: 40px;
+  margin-top: 8px;
   background: none;
-  border: 1px dashed var(--border);
-  color: var(--text-faint);
-  font-family: var(--mono);
-  font-size: 12px;
-  padding: 7px 8px;
-  border-radius: 2px;
-  cursor: pointer;
-  margin-top: 2px;
-}
-.add-row:hover{ color: var(--text); border-color: var(--text-dim); }
-.ledger{
+  border: 1px solid var(--md-outline-variant);
+  border-radius: 20px;
+  color: var(--md-primary);
+  font-family: var(--font);
   font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.add-row:hover{ background: color-mix(in srgb, var(--md-primary) 8%, transparent); }
+.ledger{
+  font-family: var(--mono);
+  font-size: 14px;
+  line-height: 22px;
   white-space: pre;
-  background: var(--panel-alt);
-  border: 1px solid var(--border);
-  border-radius: 2px;
-  padding: 14px 16px;
+  color: var(--md-on-surface);
+  background: var(--md-surface-highest);
+  border-radius: 12px;
+  padding: 16px 20px;
   overflow-x: auto;
   margin: 0;
 }
-.ledger .total-line{ color: var(--accent); font-weight: 700; }
-.empty-ledger{
-  color: var(--text-faint);
-  font-size: 13px;
-  padding: 6px 2px;
-}
-.output-actions{
-  display:flex;
-  justify-content: flex-end;
-  gap: 8px;
-  margin-top: 10px;
-}
+.ledger .total-line{ color: var(--md-success); font-weight: 700; }
+.empty-ledger{ color: var(--md-on-surface-variant); font-size: 14px; margin: 0; padding: 4px 2px; }
+.output-actions{ display:flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
 
-/* --- Headers --- */
-.header-btn-grid{
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
+/* headers */
+.header-btn-grid{ display:grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+button.ghost.header-gen-btn{
+  height: 56px;
+  border: none;
+  border-radius: 16px;
+  background: var(--md-secondary-container);
+  color: var(--md-on-secondary-container);
+  letter-spacing: 0.5px;
 }
-@media (max-width: 480px){
-  .header-btn-grid{ grid-template-columns: 1fr; }
+button.ghost.header-gen-btn:hover:not(:disabled){
+  background: color-mix(in srgb, var(--md-on-secondary-container) 8%, var(--md-secondary-container));
 }
-.header-gen-btn{
-  padding: 12px 10px;
-  font-weight: 700;
-  letter-spacing: 0.03em;
+button.ghost.header-gen-btn.copied,
+button.ghost.header-gen-btn.copied:hover:not(:disabled){
+  background: var(--md-success);
+  color: var(--md-on-success);
 }
-.header-gen-btn.copied{
-  color: var(--accent);
-  border-color: var(--accent-dim);
-}
-.header-gen-btn.full-width{
-  grid-column: 1 / -1;
-}
-#headers-preview canvas{
-  max-width: 100%;
-  display: block;
-  margin: 0 auto;
-}
+#headers-preview canvas{ max-width: 100%; display:block; margin: 0 auto; }
 </style>
 </head>
 <body>
 <div class="page">
 <header>
 <h1>Tools</h1>
-<button class="theme-toggle" id="themeToggle" type="button">dark/light</button>
+<button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle dark/light theme" title="Toggle theme"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18V4c4.41 0 8 3.59 8 8s-3.59 8-8 8z"/></svg></button>
 </header>
 
 <div class="tabbar">
-<button class="tab-btn active" id="tabCullBtn" type="button" data-tab="cull">Cull</button>
-<button class="tab-btn" id="tabTotalBtn" type="button" data-tab="total">Total</button>
+<button class="tab-btn active" id="tabTotalBtn" type="button" data-tab="total">Total</button>
 <button class="tab-btn" id="tabHeadersBtn" type="button" data-tab="headers">Headers</button>
 </div>
 
-<!-- ================= CULLER ================= -->
-<div class="tab-panel active" id="panel-cull">
-<section>
-<p class="section-label">Paste raw lines. Keeps only "xx xx amount R/S" entries — drops noise, accounting notes, and 3-digit bets.</p>
-<div class="cull-grid">
-<div>
-<div class="col-head"><label>Raw input</label><span class="count" id="cull-inCount"></span></div>
-<textarea class="cull-ta" id="cull-input" placeholder="Paste your raw lines here..." spellcheck="false"></textarea>
-</div>
-<div>
-<div class="col-head"><label>Processed output</label><span class="count" id="cull-outCount"></span></div>
-<textarea class="cull-ta" id="cull-output" placeholder="Processed result appears here automatically..." spellcheck="false" readonly></textarea>
-</div>
-</div>
-<div class="row-actions">
-<span></span>
-<button class="primary" id="cull-copyBtn" type="button">Copy output</button>
-</div>
-</section>
-</div>
-
 <!-- ================= TALLY ================= -->
-<div class="tab-panel" id="panel-total">
+<div class="tab-panel active" id="panel-total">
 <div class="narrow">
 
 <section>
-<p class="section-label">Paste the dump. Every line reading "TOTAL: x" gets pulled out, in order.</p>
 <textarea id="tally-dump" placeholder="paste the raw report here..."></textarea>
 <div class="row-actions">
 <span class="hint" id="tally-parseHint">nothing extracted yet</span>
@@ -387,7 +326,6 @@ button:disabled{ opacity: 0.45; cursor: not-allowed; }
 </section>
 
 <section>
-<p class="section-label">Extracted values land here — add, remove, or correct any entry by hand.</p>
 <div class="slots" id="tally-slots"></div>
 <button class="add-row" id="tally-addRowBtn" type="button">+ add entry</button>
 <div class="row-actions">
@@ -413,13 +351,13 @@ button:disabled{ opacity: 0.45; cursor: not-allowed; }
 <div class="narrow">
 
 <section>
-<p class="section-label">Generates a centered header block — title, time (approximated to the 2PM / 5PM / 9PM cutoffs), and today's date — and copies it straight to your clipboard as an image.</p>
 <div class="header-btn-grid">
 <button class="ghost header-gen-btn" type="button" data-title="COPY ALL">COPY ALL</button>
 <button class="ghost header-gen-btn" type="button" data-title="100 BETS">100 BETS</button>
 <button class="ghost header-gen-btn" type="button" data-title="50S BETS">50S BETS</button>
+<button class="ghost header-gen-btn" type="button" data-title="20S BETS">20S BETS</button>
 <button class="ghost header-gen-btn" type="button" data-title="VOIDS">VOIDS</button>
-<button class="ghost header-gen-btn full-width" type="button" data-title="CLOSED">CLOSED</button>
+<button class="ghost header-gen-btn" type="button" data-title="CLOSED">CLOSED</button>
 </div>
 <div class="row-actions">
 <span class="hint" id="headers-hint">pick a header to copy</span>
@@ -437,6 +375,49 @@ button:disabled{ opacity: 0.45; cursor: not-allowed; }
 </div>
 
 <script>
+/* Fixed palette for exported images — never changes with the page theme */
+const OUT = {
+  bg:     '#1e1e2e',  /* base */
+  border: '#45475a',  /* surface1 */
+  text:   '#cdd6f4',  /* text */
+  dim:    '#a6adc8',  /* subtext0 */
+  accent: '#a6e3a1'   /* green */
+};
+
+/* Manila time (UTC+8, no DST) — independent of the device's timezone */
+function manilaNow(){
+  const p = {};
+  new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Manila', hourCycle: 'h23',
+    year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric'
+  }).formatToParts(new Date()).forEach(x => { p[x.type] = x.value; });
+  return { y: +p.year, mo: +p.month, d: +p.day, h: +p.hour };
+}
+
+/* Next draw slot + the date it belongs to. After 9PM the next slot is tomorrow's 2PM. */
+function nextDrawSlot(){
+  const t = manilaNow();
+  let label = '2PM', dayOffset = 0;
+  if (t.h < 14) label = '2PM';
+  else if (t.h < 17) label = '5PM';
+  else if (t.h < 21) label = '9PM';
+  else { label = '2PM'; dayOffset = 1; }
+  const d = new Date(Date.UTC(t.y, t.mo - 1, t.d + dayOffset));
+  return { label, y: d.getUTCFullYear(), mo: d.getUTCMonth(), d: d.getUTCDate() };
+}
+function nextHourLabel(){ return nextDrawSlot().label; }
+
+/* Make sure the mono font is ready before anything is drawn to a canvas */
+async function ensureFonts(){
+  const load = Promise.all([
+    document.fonts.load("400 11px 'IBM Plex Mono'"),
+    document.fonts.load("600 14px 'IBM Plex Mono'"),
+    document.fonts.load("700 15px 'IBM Plex Mono'")
+  ]).catch(() => {});
+  await Promise.race([load, new Promise(r => setTimeout(r, 1500))]);
+}
+
+
 /* ============================================================
    Shared: theme toggle + tabs
    ============================================================ */
@@ -444,15 +425,12 @@ button:disabled{ opacity: 0.45; cursor: not-allowed; }
   const themeToggle = document.getElementById('themeToggle');
   themeToggle.addEventListener('click', () => {
     const root = document.documentElement;
-    const current = root.getAttribute('data-theme');
-    if (current === 'dark') root.setAttribute('data-theme', 'light');
-    else if (current === 'light') root.setAttribute('data-theme', 'dark');
-    else root.setAttribute('data-theme', 'light');
+    const current = root.getAttribute('data-theme') || 'dark';
+    root.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
   });
 
-  const tabBtns = [document.getElementById('tabCullBtn'), document.getElementById('tabTotalBtn'), document.getElementById('tabHeadersBtn')];
+  const tabBtns = [document.getElementById('tabTotalBtn'), document.getElementById('tabHeadersBtn')];
   const panels = {
-    cull: document.getElementById('panel-cull'),
     total: document.getElementById('panel-total'),
     headers: document.getElementById('panel-headers')
   };
@@ -463,62 +441,6 @@ button:disabled{ opacity: 0.45; cursor: not-allowed; }
       Object.keys(panels).forEach(key => {
         panels[key].classList.toggle('active', key === target);
       });
-    });
-  });
-})();
-
-/* ============================================================
-   Culler
-   ============================================================ */
-(function(){
-  const inputEl = document.getElementById('cull-input');
-  const outputEl = document.getElementById('cull-output');
-  const inCount = document.getElementById('cull-inCount');
-  const outCount = document.getElementById('cull-outCount');
-  const copyBtn = document.getElementById('cull-copyBtn');
-
-  // Two-digit pair bet: <num 1-2 digits> <num 1-2 digits> <amount digits> <R/S letter>
-  // optional trailing bettor name is matched (to allow the line to still qualify) but discarded.
-  const KEEP_PATTERN = /^\s*(\d{1,2})\s+(\d{1,2})\s+(\d+)\s+([RSrs])(?:\s+\S.*)?\s*$/;
-
-  function process() {
-    const raw = inputEl.value;
-
-    const lines = raw
-      .replace(/\r\n/g, '\n')
-      .replace(/\r/g, '\n')
-      .split('\n')
-      .map(line => line.replace(/[ \t]+$/, ''));
-
-    const results = [];
-    for (const line of lines) {
-      const m = line.match(KEEP_PATTERN);
-      if (!m) continue;
-      const [, num1, num2, amount, letter] = m;
-      results.push(`${num1} ${num2} ${amount} ${letter.toUpperCase()}`);
-    }
-
-    outputEl.value = results.join('\n');
-
-    const inLineCount = lines.filter(l => l.trim() !== '').length;
-    inCount.textContent = `${inLineCount} lines`;
-    outCount.textContent = `${results.length} kept · ${inLineCount - results.length} dropped`;
-  }
-
-  inputEl.addEventListener('input', process);
-
-  copyBtn.addEventListener('click', () => {
-    if (!outputEl.value) return;
-    const lines = outputEl.value.split('\n').filter(l => l.trim() !== '');
-    const total = lines.reduce((sum, line) => {
-      const parts = line.trim().split(/\s+/);
-      return sum + (parseInt(parts[2], 10) || 0);
-    }, 0);
-    const clipboardText = ['=== 2D entries ===', ...lines, `TOTAL: ${total}`].join('\n');
-    navigator.clipboard.writeText(clipboardText).then(() => {
-      const original = copyBtn.textContent;
-      copyBtn.textContent = 'Copied!';
-      setTimeout(() => { copyBtn.textContent = original; }, 1200);
     });
   });
 })();
@@ -540,7 +462,8 @@ button:disabled{ opacity: 0.45; cursor: not-allowed; }
   const exportImgBtn = document.getElementById('tally-exportImgBtn');
 
   let lastOutputText = '';
-  let lastLines = [];       // { text, accent } for image export
+  let lastStrs = [];        // formatted values, for image export
+  let lastGrand = '';
   let rows = [];
 
   function reindex(){
@@ -552,7 +475,7 @@ button:disabled{ opacity: 0.45; cursor: not-allowed; }
     row.className = 'slot';
     row.innerHTML = `
       <span class="idx"></span>
-      <input class="val" type="text" inputmode="numeric" placeholder="value" />
+      <input class="val" type="text" inputmode="decimal" placeholder="value" />
       <button class="rm" type="button" title="remove">&times;</button>
     `;
     slotsEl.appendChild(row);
@@ -577,24 +500,32 @@ button:disabled{ opacity: 0.45; cursor: not-allowed; }
     return entry;
   }
 
+  // Reads "TOTAL: 1,200", "total 1200.50", "TOTAL = ₱1,200". "GRAND TOTAL" lines are ignored on
+  // purpose. Any other line mentioning "total" that can't be read is reported, never silently dropped.
   function parseDump(text){
-    const lines = text.split(/\r?\n/);
     const found = [];
-    for (const line of lines){
-      const totalMatch = line.match(/^\s*TOTAL:\s*([\d,]+)\s*$/i);
-      if (totalMatch){
-        found.push(totalMatch[1].replace(/,/g, ''));
+    const unreadable = [];
+    for (const line of text.split(/\r?\n/)){
+      const m = line.match(/^\s*TOTAL\s*[:=\-]?\s*(?:₱|PHP|P)?\s*(\d[\d,]*(?:\.\d+)?)\s*$/i);
+      if (m){
+        found.push(m[1].replace(/,/g, ''));
+      } else if (/\btotal\b/i.test(line) && !/grand\s*total/i.test(line)){
+        unreadable.push(line.trim());
       }
     }
-    return found;
+    return { found, unreadable };
   }
+
+  const clip = str => (str.length > 28 ? str.slice(0, 28) + '…' : str);
 
   extractBtn.addEventListener('click', () => {
     const text = dumpEl.value;
-    const found = parseDump(text);
+    const { found, unreadable } = parseDump(text);
 
     if (found.length === 0){
-      parseHint.textContent = 'no "TOTAL: x" lines found';
+      parseHint.textContent = unreadable.length
+        ? `nothing readable — ${unreadable.length} "total" line(s) skipped, e.g. "${clip(unreadable[0])}"`
+        : 'no "TOTAL: x" lines found';
       parseHint.className = 'hint warn';
       return;
     }
@@ -603,8 +534,13 @@ button:disabled{ opacity: 0.45; cursor: not-allowed; }
     rows = [];
     found.forEach(v => addRow(v));
 
-    parseHint.textContent = `${found.length} extracted`;
-    parseHint.className = 'hint';
+    if (unreadable.length){
+      parseHint.textContent = `${found.length} extracted · ${unreadable.length} "total" line(s) NOT read, e.g. "${clip(unreadable[0])}"`;
+      parseHint.className = 'hint warn';
+    } else {
+      parseHint.textContent = `${found.length} extracted`;
+      parseHint.className = 'hint';
+    }
     refresh();
   });
 
@@ -625,10 +561,22 @@ button:disabled{ opacity: 0.45; cursor: not-allowed; }
 
   function getValues(){
     return rows.map(r => {
-      const raw = r.valInput.value.replace(/,/g, '').trim();
-      if (raw === '' || !/^\d+$/.test(raw)) return null;
-      return parseInt(raw, 10);
+      const raw = r.valInput.value.replace(/[,\s₱]|php/gi, '');
+      if (!/^\d+(\.\d+)?$/.test(raw)) return null;
+      return parseFloat(raw);
     });
+  }
+
+  // '+' pinned to the left edge, every number (and the grand total) flush to the right edge
+  function buildLedger(strs, grandStr, label){
+    const numW = Math.max(...strs.map(s => s.length));
+    const inner = Math.max(label.length, numW + 2, grandStr.length);
+    return {
+      body: strs.map((s, i) => (i === 0 ? ' ' : '+') + s.padStart(inner - 1, ' ')),
+      sep: '='.repeat(inner),
+      label: label,
+      total: grandStr.padStart(inner, ' ')
+    };
   }
 
   function renderLedger(values){
@@ -638,35 +586,28 @@ button:disabled{ opacity: 0.45; cursor: not-allowed; }
       ledgerBox.innerHTML = '<p class="empty-ledger">— add at least one value —</p>';
       outputActions.style.display = 'none';
       lastOutputText = '';
-      lastLines = [];
+      lastStrs = [];
+      lastGrand = '';
       return;
     }
 
-    const strs = filled.map(v => v.toLocaleString('en-US'));
-    const width = Math.max(...strs.map(s => s.length));
-    const lines = [];
-    strs.forEach((s, i) => {
-      const padded = s.padStart(width, ' ');
-      lines.push((i === 0 ? ' ' : '+ ') + padded);
-    });
-    const sepLen = 4 + width;
-    lines.push('='.repeat(sepLen));
+    const cents = filled.map(v => Math.round(v * 100));
+    const hasDecimals = cents.some(c => c % 100 !== 0);
+    const fmt = c => (c / 100).toLocaleString('en-US',
+      hasDecimals ? { minimumFractionDigits: 2, maximumFractionDigits: 2 } : { maximumFractionDigits: 0 });
+    const strs = cents.map(fmt);
+    const grandStr = fmt(cents.reduce((x, y) => x + y, 0));
+    lastStrs = strs;
+    lastGrand = grandStr;
 
-    const grandTotal = filled.reduce((a, b) => a + b, 0);
-    const grandStr = grandTotal.toLocaleString('en-US');
-
-    const bodyText = lines.join('\n');
-    const fullText = bodyText + '\nGRAND TOTAL:\n' + grandStr;
-    lastOutputText = fullText;
-
-    lastLines = lines.map(l => ({ text: l, accent: false }));
-    lastLines.push({ text: `${nextHourLabel()} GRAND TOTAL:`, accent: false });
-    lastLines.push({ text: grandStr, accent: true });
+    const t = buildLedger(strs, grandStr, 'GRAND TOTAL:');
+    const bodyText = [...t.body, t.sep, t.label].join('\n');
+    lastOutputText = bodyText + '\n' + t.total;
 
     ledgerBox.innerHTML =
       '<pre class="ledger">' +
       escapeHtml(bodyText) +
-      '\nGRAND TOTAL:\n<span class="total-line">' + escapeHtml(grandStr) + '</span></pre>';
+      '\n<span class="total-line">' + escapeHtml(t.total) + '</span></pre>';
     outputActions.style.display = 'flex';
   }
 
@@ -690,10 +631,6 @@ button:disabled{ opacity: 0.45; cursor: not-allowed; }
     return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
 
-  function cssVar(name){
-    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-  }
-
   function timestampName(){
     const d = new Date();
     const pad = n => String(n).padStart(2, '0');
@@ -704,14 +641,6 @@ button:disabled{ opacity: 0.45; cursor: not-allowed; }
     const mi = pad(d.getMinutes());
     const ss = pad(d.getSeconds());
     return `${mm}${dd}${yy}-${hh}${mi}${ss}`;
-  }
-
-  function nextHourLabel(){
-    const h = new Date().getHours(); // 0-23
-    if (h < 14) return '2PM';
-    if (h < 17) return '5PM';
-    if (h < 21) return '9PM';
-    return '2PM'; // 9PM onward rolls to next day's first cutoff
   }
 
   copyBtn.addEventListener('click', async () => {
@@ -726,8 +655,9 @@ button:disabled{ opacity: 0.45; cursor: not-allowed; }
     }
   });
 
-  exportImgBtn.addEventListener('click', () => {
-    if (lastLines.length === 0) return;
+  exportImgBtn.addEventListener('click', async () => {
+    if (lastStrs.length === 0) return;
+    await ensureFonts();
 
     const scale = 2;
     const fontSize = 14;
@@ -736,14 +666,18 @@ button:disabled{ opacity: 0.45; cursor: not-allowed; }
     const padY = 18;
     const font = `600 ${fontSize}px 'IBM Plex Mono', ui-monospace, monospace`;
 
-    const bg = cssVar('--panel-alt') || '#22241a';
-    const border = cssVar('--border') || '#3a3d2b';
-    const textColor = cssVar('--text') || '#eae6d5';
-    const accentColor = cssVar('--accent') || '#a3c02f';
+    const bg = OUT.bg;
+    const border = OUT.border;
+    const textColor = OUT.text;
+    const accentColor = OUT.accent;
 
-    const imgLines = lastLines.slice(0, -2)
-      .concat([{ text: `${nextHourLabel()} GRAND TOTAL:`, accent: false }])
-      .concat([lastLines[lastLines.length - 1]]);
+    const layout = buildLedger(lastStrs, lastGrand, `${nextHourLabel()} GRAND TOTAL:`);
+    const imgLines = [
+      ...layout.body.map(text => ({ text, accent: false })),
+      { text: layout.sep, accent: false },
+      { text: layout.label, accent: false },
+      { text: layout.total, accent: true }
+    ];
 
     const measureCanvas = document.createElement('canvas');
     const mctx = measureCanvas.getContext('2d');
@@ -828,10 +762,6 @@ button:disabled{ opacity: 0.45; cursor: not-allowed; }
 
   const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sept','Oct','Nov','Dec'];
 
-  function cssVar(name){
-    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-  }
-
   function timestampName(){
     const d = new Date();
     const pad = n => String(n).padStart(2, '0');
@@ -844,17 +774,9 @@ button:disabled{ opacity: 0.45; cursor: not-allowed; }
     return `${mm}${dd}${yy}-${hh}${mi}${ss}`;
   }
 
-  function nextHourLabel(){
-    const h = new Date().getHours(); // 0-23
-    if (h < 14) return '2PM';
-    if (h < 17) return '5PM';
-    if (h < 21) return '9PM';
-    return '2PM'; // 9PM onward rolls to next day's first cutoff
-  }
-
   function standardDate(){
-    const d = new Date();
-    return `${MONTHS[d.getMonth()]} ${d.getDate()} ${d.getFullYear()}`;
+    const t = nextDrawSlot();
+    return `${MONTHS[t.mo]} ${t.d} ${t.y}`;
   }
 
   function buildHeaderCanvas(title){
@@ -868,11 +790,11 @@ button:disabled{ opacity: 0.45; cursor: not-allowed; }
     const font = `700 ${fontSize}px 'IBM Plex Mono', ui-monospace, monospace`;
     const smallFont = `400 ${smallFontSize}px 'IBM Plex Mono', ui-monospace, monospace`;
 
-    const bg = cssVar('--panel-alt') || '#22241a';
-    const border = cssVar('--border') || '#3a3d2b';
-    const textColor = cssVar('--text') || '#eae6d5';
-    const textDim = cssVar('--text-dim') || '#9a9d84';
-    const accentColor = cssVar('--accent') || '#a3c02f';
+    const bg = OUT.bg;
+    const border = OUT.border;
+    const textColor = OUT.text;
+    const textDim = OUT.dim;
+    const accentColor = OUT.accent;
 
     let suffix = null;
     if (title === 'COPY ALL') suffix = '3d list';
@@ -937,8 +859,9 @@ button:disabled{ opacity: 0.45; cursor: not-allowed; }
   }
 
   buttons.forEach(btn => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', async () => {
       const title = btn.dataset.title;
+      await ensureFonts();
       const canvas = buildHeaderCanvas(title);
 
       // update preview
