@@ -281,7 +281,8 @@ button:disabled{ opacity: 0.38; cursor: not-allowed; }
 .output-actions{ display:flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
 
 /* headers */
-.header-btn-grid{ display:grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.header-btn-grid{ display:grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; width: 100%; max-width: 560px; }
+@media (max-width: 480px){ .header-btn-grid{ grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 button.ghost.header-gen-btn{
   height: 56px;
   border: none;
@@ -298,7 +299,40 @@ button.ghost.header-gen-btn.copied:hover:not(:disabled){
   background: var(--md-success);
   color: var(--md-on-success);
 }
+button.ghost.header-gen-btn.header-big{ grid-column: 1 / -1; height: 88px; font-size: 18px; }
+button.ghost.header-gen-btn.header-sq{ height: auto; aspect-ratio: 1 / 1; padding: 4px; font-size: 13px; line-height: 1.2; white-space: normal; }
 #headers-preview canvas{ max-width: 100%; display:block; margin: 0 auto; }
+
+/* check tab */
+#check-dump{ min-height: clamp(320px, 55vh, 640px); }   /* roomier input for reading raw data */
+.chk-list{ display:flex; flex-direction:column; gap:8px; }
+.chk-item{ border-left:3px solid var(--md-warn); padding:8px 12px; background:var(--md-surface-high); border-radius:0 12px 12px 0; }
+.chk-item.note{ border-left-color:var(--md-outline); }
+.chk-item.check{ border-left-color:var(--md-primary); }
+.chk-meta{ font-size:12px; color:var(--md-on-surface-variant); }
+.chk-msg{ font-size:13px; }
+.chk-line{ font-family:var(--mono); font-size:13px; margin-top:2px; word-break:break-all; }
+.chk-row{ display:flex; gap:12px; font-family:var(--mono); font-size:13px; padding:4px 2px; }
+.chk-row .n{ color:var(--md-on-surface-variant); }
+.chk-row .t{ margin-left:auto; font-weight:600; text-align:right; }
+.chk-row.grand{ border-top:1px solid var(--md-outline-variant); margin-top:6px; padding-top:8px; color:var(--md-success); font-weight:700; }
+.chk-ok{ color:var(--md-success); }
+.chk-toggle{ display:inline-flex; align-items:center; gap:6px; font-size:13px; color:var(--md-on-surface-variant); margin-bottom:8px; cursor:pointer; }
+.chk-toggle + .chk-toggle{ margin-left:14px; }
+.chk-ctx{ margin-top:8px; }
+.chk-more{ margin-top:6px; }
+.chk-more summary{ cursor:pointer; font-size:12px; color:var(--md-on-surface-variant); }
+.chk-ctxwrap{ margin-top:4px; }
+.chk-tools{ display:flex; align-items:center; flex-wrap:wrap; gap:6px 14px; margin-bottom:8px; }
+.chk-tools .chk-toggle{ margin:0; }
+.chk-chips{ display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-bottom:8px; }
+.chk-chips:empty{ display:none; }
+.chk-chipcap{ font-size:13px; color:var(--md-on-surface-variant); }
+.chk-chip.copied{ border-color:var(--md-success); color:var(--md-success); }
+.chk-ctxh{ font-size:12px; color:var(--md-on-surface-variant); margin-bottom:2px; }
+.chk-ctxbody{ font-family:var(--mono); font-size:12px; overflow:auto; max-height:200px; background:var(--md-surface); padding:6px 8px; border-radius:8px; }
+.chk-ctxbody div{ white-space:pre; }
+.chk-ctxbody .bad{ background:color-mix(in srgb, var(--md-warn) 28%, transparent); font-weight:700; }
 </style>
 </head>
 <body>
@@ -311,6 +345,7 @@ button.ghost.header-gen-btn.copied:hover:not(:disabled){
 <div class="tabbar">
 <button class="tab-btn active" id="tabTotalBtn" type="button" data-tab="total">Total</button>
 <button class="tab-btn" id="tabHeadersBtn" type="button" data-tab="headers">Headers</button>
+<button class="tab-btn" id="tabCheckBtn" type="button" data-tab="check">Check</button>
 </div>
 
 <!-- ================= TALLY ================= -->
@@ -352,12 +387,12 @@ button.ghost.header-gen-btn.copied:hover:not(:disabled){
 
 <section>
 <div class="header-btn-grid">
-<button class="ghost header-gen-btn" type="button" data-title="COPY ALL">COPY ALL</button>
-<button class="ghost header-gen-btn" type="button" data-title="100 BETS">100 BETS</button>
-<button class="ghost header-gen-btn" type="button" data-title="50S BETS">50S BETS</button>
-<button class="ghost header-gen-btn" type="button" data-title="20S BETS">20S BETS</button>
-<button class="ghost header-gen-btn" type="button" data-title="VOIDS">VOIDS</button>
-<button class="ghost header-gen-btn" type="button" data-title="CLOSED">CLOSED</button>
+<button class="ghost header-gen-btn header-big" type="button" data-title="CLOSED">CLOSED</button>
+<button class="ghost header-gen-btn header-sq" type="button" data-title="COPY ALL">COPY ALL</button>
+<button class="ghost header-gen-btn header-sq" type="button" data-title="20S BETS">20S BETS</button>
+<button class="ghost header-gen-btn header-sq" type="button" data-title="50S BETS">50S BETS</button>
+<button class="ghost header-gen-btn header-sq" type="button" data-title="100 BETS">100 BETS</button>
+<button class="ghost header-gen-btn header-sq" type="button" data-title="VOIDS">VOIDS</button>
 </div>
 <div class="row-actions">
 <span class="hint" id="headers-hint">pick a header to copy</span>
@@ -372,7 +407,43 @@ button.ghost.header-gen-btn.copied:hover:not(:disabled){
 </div>
 </div>
 
+<!-- ================= CHECK ================= -->
+<div class="tab-panel" id="panel-check">
+<div class="narrow">
+
+<section>
+<textarea id="check-dump" placeholder="paste the raw bets here...  (2D: xx xx yy R/S name · 3D: x x x yy R/S name)"></textarea>
+<div class="row-actions">
+<span class="hint" id="check-hint">nothing checked yet</span>
+<button class="ghost" id="check-clearBtn" type="button">Clear</button>
+<button class="primary" id="check-runBtn" type="button">Check bets</button>
 </div>
+</section>
+
+<section>
+<p class="section-label">Voided</p>
+<div class="chk-tools">
+<label class="chk-toggle"><input type="checkbox" id="check-why"> Show reasons</label>
+</div>
+<div id="check-voidImgs" class="chk-chips"></div>
+<div id="check-voids"><p class="empty-ledger">— nothing checked yet —</p></div>
+</section>
+
+<section>
+<p class="section-label">Check</p>
+<div id="check-checks"><p class="empty-ledger">— nothing checked yet —</p></div>
+</section>
+
+<section>
+<p class="section-label">Per-name totals (voided lines not counted)</p>
+<div id="check-sums"><p class="empty-ledger">— nothing checked yet —</p></div>
+</section>
+
+</div>
+</div>
+
+</div>
+
 
 <script>
 /* Fixed palette for exported images — never changes with the page theme */
@@ -429,10 +500,11 @@ async function ensureFonts(){
     root.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
   });
 
-  const tabBtns = [document.getElementById('tabTotalBtn'), document.getElementById('tabHeadersBtn')];
+  const tabBtns = [document.getElementById('tabTotalBtn'), document.getElementById('tabHeadersBtn'), document.getElementById('tabCheckBtn')];
   const panels = {
     total: document.getElementById('panel-total'),
-    headers: document.getElementById('panel-headers')
+    headers: document.getElementById('panel-headers'),
+    check: document.getElementById('panel-check')
   };
   tabBtns.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -907,6 +979,279 @@ async function ensureFonts(){
         setTimeout(() => btn.classList.remove('copied'), 1600);
       }, 'image/png');
     });
+  });
+})();
+/* ============================================================
+   Check (raw bet validator): flags possible voids, never rewrites bets
+   ============================================================ */
+(function(){
+  const dumpEl = document.getElementById('check-dump');
+  const hintEl = document.getElementById('check-hint');
+  const voidBox = document.getElementById('check-voids');
+  const checkBox = document.getElementById('check-checks');
+  const sumBox = document.getElementById('check-sums');
+  const whyEl = document.getElementById('check-why');
+  const esc = str => str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  let last = null;
+
+  /*ANALYZE_START*/
+  // Digit limits: 2D numbers min2-max2, 3D digits min3-max3. Change here if the portal rules change.
+  const RULES = { min2: 1, max2: 31, min3: 0, max3: 9 };
+  // 2D: "xx xx yy R/S [name]"   3D: "x x x yy R/S [name]", type may be attached to the amount in both: "07 07 10S", "0 0 0 25s"   (extra whitespace is fine)
+  const RE2 = /^(\d{1,2}) (\d{1,2}) (\d+) ?([RrSs])(?: (\S+))?$/;
+  const RE3 = /^(\d) (\d) (\d) (\d+) ?([RrSs])(?: (\S+))?$/;
+  const NOT_A_BET = /^(?:\d{1,2}:\d{2}|\d+\s*[ap]m\b|\d+d)/i;   // times, "2pm", "2d" / "3d" session labels
+  // P3 bets (ignored): three 2-digit numbers, amount, optional name, no R/S type  e.g. "11 10 29 25 NATY"
+  const P3 = /^\d{2} \d{2} \d{2} \d+(?: (?![RrSs]$)\S+)?$/;
+  // Game labels like "6/42", "6/45 - 25" are ignored, unless the line has an R/S or a codename (any letter):
+  // then it is probably a mistyped bet, e.g. "9/10 10 R ass", and gets flagged instead.
+  const isGameLabel = line => /^\d{1,2}\/\d{1,2}(?=\s|$)/.test(line) && !/[A-Za-z]/.test(line);
+  const gluedName = line => {
+    const t = line.split(' ').find(x => !/^\d+$/.test(x));
+    const g = t && /^[RrSs]([A-Za-z]+)$/.exec(t);
+    return g ? g[1].toUpperCase() : null;
+  };
+
+  // Chat lines: a sender name line (e.g. "Princess", "Cat · Edited") usually comes right before a message's bets.
+  const CHAT_CHROME = /^(?:x-format|edited$|t \d+|={3,}|p3\b|.*\d+\/\d+|.*deleted a message|ano yan)/i;
+  const senderOf = s => {
+    if (!s || /^\d/.test(s) || CHAT_CHROME.test(s)) return null;
+    const n = s.replace(/\s*·.*$/, '').replace(/\s+replied to .*$/i, '').replace(/[^\p{L}\p{N}\s]/gu, '').trim();
+    return n || null;
+  };
+
+  // Short reasons, only shown when "Show reasons" is ticked.
+  const whyBad = line => {
+    const d = line.replace(/^((?:\d+ )*\d+)([A-Za-z])/, '$1 $2');
+    const tk = d.split(' ');
+    let k = 0; while (k < tk.length && /^\d+$/.test(tk[k])) k++;
+    const nums = tk.slice(0, k), rest = tk.slice(k);
+    if (nums.length === 3){ if (nums[0].length > 2 || nums[1].length > 2) return '2D numbers are 1-2 digits'; }
+    else if (nums.length === 4){ if (nums.slice(0, 3).some(n => n.length !== 1)) return '3D digits must be single digits'; }
+    else return 'expected 3 numbers (2D) or 4 (3D), found ' + nums.length;
+    if (!rest.length) return 'missing R/S';
+    if (/^[RrSs][A-Za-z]/.test(rest[0])) return 'type glued to the name "' + rest[0] + '"';
+    if (!/^[RrSs]$/.test(rest[0])) return 'type must be R or S, found "' + rest[0] + '"';
+    if (rest.length > 2) return 'extra text after the name: "' + rest.slice(2).join(' ') + '"';
+    return 'does not match the 2D / 3D format';
+  };
+
+  // A "block" is a run of consecutive bet lines; any other line (blank, sender, time, =====) ends it.
+  function analyze(text){
+    const voids = [], checks = [], blocks = [];
+    const owners = new Map();
+    let owner = null, ownerFrom = null, bets = 0, cur = null, sender = null, newMsg = false;
+    text.split(/\r?\n/).forEach((raw, i) => {
+      const ln = i + 1, shown = raw.trim(), line = shown.replace(/\s+/g, ' ');
+      if (/^={3,}$/.test(line)){ owner = null; ownerFrom = null; cur = null; return; }
+      if (!/^\d/.test(line) || /^\d+$/.test(line) || NOT_A_BET.test(line) || P3.test(line) || isGameLabel(line)){   // chat chrome, totals, P3 bets, game labels
+        cur = null;
+        const sn = senderOf(shown);
+        if (sn){ sender = sn; newMsg = true; }
+        return;
+      }
+      if (!cur){ cur = { i:blocks.length, lines:[], sender, newMsg, seen:false }; blocks.push(cur); newMsg = false; }
+      const entry = { ln, text:shown, who:null };
+      cur.lines.push(entry);
+      const voidIt = (who, why) => { entry.who = who; voids.push({ ln, text:line, who, from:cur.sender, bi:cur.i, why }); };
+
+      const m = RE2.exec(line) || RE3.exec(line);
+      if (!m){ voidIt(gluedName(line) || owner || '(no name)', whyBad(line)); return; }
+
+      const is2 = m.length === 6;                      // RE2 has 5 groups, RE3 has 6 (+ full match)
+      const nums = is2 ? [m[1], m[2]] : [m[1], m[2], m[3]];
+      const amt = +(is2 ? m[3] : m[4]);
+      const type = (is2 ? m[4] : m[5]).toUpperCase();
+      const name = is2 ? m[5] : m[6];
+      const who = name ? name.toUpperCase() : (owner || '(no name)');
+
+      const outOfRange = is2
+        ? nums.some(n => +n < RULES.min2 || +n > RULES.max2)
+        : nums.some(n => +n < RULES.min3 || +n > RULES.max3);
+      if (outOfRange){ voidIt(who, is2 ? '2D numbers must be ' + RULES.min2 + '-' + RULES.max2 : '3D digits must be ' + RULES.min3 + '-' + RULES.max3); return; }
+      if (name){ owner = name.toUpperCase(); ownerFrom = cur.sender; }
+      if (owner === null){ voidIt('(no name)', 'no codename above this bet'); return; }
+      entry.who = owner;
+
+      // first counted bet of a new message with no codename: owner is carried over from an earlier message
+      // (same sender continuing their own earlier codename is fine, so only a different sender counts)
+      const carried = cur.newMsg && !cur.seen && !name && cur.sender !== ownerFrom;
+      cur.seen = true;
+      const why = [];
+      if (carried) why.push('no codename here, so it takes ' + owner + ' from ' + (ownerFrom || 'an earlier') + "'s message");
+      if (is2 && nums.some(n => n.length === 1)) why.push('single-digit 2D number, the portal pads it');
+      if (why.length) checks.push({ ln, text:line, who, from:cur.sender, bi:cur.i, why:why.join(' · ') });
+
+      const o = owners.get(owner) || { total:0, count:0, r:0, s:0 };
+      o.total += amt; o.count++; o[type.toLowerCase()] += amt;
+      owners.set(owner, o);
+      bets++;
+    });
+    return { voids, checks, owners, bets, blocks };
+  }
+  /*ANALYZE_END*/
+
+  /*VOIDIMG_START*/
+  // Layout for the "VOIDED!" image: banner, then voided bets grouped by owner.
+  function voidImageLines(voids, timeStr, dateStr){
+    const groups = new Map();
+    voids.forEach(v => { const k = (v.from ? v.from + ' · ' : '') + v.who; if (!groups.has(k)) groups.set(k, []); groups.get(k).push(v.text); });
+    const body = [];
+    groups.forEach((bets, who) => { body.push({ text:who, owner:true }); bets.forEach(b => body.push({ text:'  ' + b })); });
+    const maxChars = Math.max(13, timeStr.length + 2, dateStr.length + 2, ...body.map(b => b.text.length));
+    return { sep:'='.repeat(maxChars + 1), body };
+  }
+  /*VOIDIMG_END*/
+
+  const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sept','Oct','Nov','Dec'];
+  const VOID_RED = '#f38ba8';
+
+  function buildVoidCanvas(voids){
+    const scale = 2, lineHeight = 24, smallLH = 18, padX = 28, padY = 16;
+    const font = "700 15px 'IBM Plex Mono', ui-monospace, monospace";
+    const smallFont = "400 11px 'IBM Plex Mono', ui-monospace, monospace";
+    const slot = nextDrawSlot();
+    const timeStr = slot.label, dateStr = MONTHS[slot.mo] + ' ' + slot.d + ' ' + slot.y;
+    const { sep, body } = voidImageLines(voids, timeStr, dateStr);
+    const sepLine = { text:sep, color:VOID_RED, align:'center', font, h:lineHeight };
+    const lines = [
+      sepLine,
+      { text:'VOIDED!', color:OUT.text, align:'center', font, h:lineHeight },
+      { text:timeStr, color:OUT.text, align:'center', font, h:lineHeight },
+      { text:dateStr, color:OUT.text, align:'center', font, h:lineHeight },
+      sepLine,
+      ...body.map(b => ({ text:b.text, color:b.owner ? VOID_RED : OUT.text, align:'left', font, h:lineHeight })),
+      { text:voids.length + ' voided', color:OUT.dim, align:'center', font:smallFont, h:smallLH }
+    ];
+    const mctx = document.createElement('canvas').getContext('2d');
+    let maxW = 0;
+    lines.forEach(l => { mctx.font = l.font; maxW = Math.max(maxW, mctx.measureText(l.text).width); });
+    const width = Math.ceil(maxW + padX * 2);
+    const height = Math.ceil(lines.reduce((t, l) => t + l.h, 0) + padY * 2);
+    const canvas = document.createElement('canvas');
+    canvas.width = width * scale; canvas.height = height * scale;
+    const ctx = canvas.getContext('2d');
+    ctx.scale(scale, scale);
+    ctx.fillStyle = OUT.bg; ctx.fillRect(0, 0, width, height);
+    ctx.strokeStyle = OUT.border; ctx.lineWidth = 1; ctx.strokeRect(0.5, 0.5, width - 1, height - 1);
+    ctx.textBaseline = 'middle';
+    let y = padY;
+    lines.forEach(l => {
+      ctx.font = l.font; ctx.fillStyle = l.color; ctx.textAlign = l.align;
+      ctx.fillText(l.text, l.align === 'center' ? width / 2 : padX, y + l.h / 2);
+      y += l.h;
+    });
+    return canvas;
+  }
+
+  // One image per owner, so each person can be sent to their own group chat.
+  const voidImgBox = document.getElementById('check-voidImgs');
+  async function copyVoidImage(voids, btn){
+    await ensureFonts();
+    buildVoidCanvas(voids).toBlob(async blob => {
+      if (!blob) return;
+      let copied = false;
+      try {
+        if (navigator.clipboard && window.ClipboardItem){
+          await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+          copied = true;
+        }
+      } catch (e) { copied = false; }
+      if (!copied){
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = 'voided-' + [voids[0].from, voids[0].who].filter(Boolean).join('-').toLowerCase().replace(/[^a-z0-9]+/g, '') + '.png';
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      }
+      btn.classList.add('copied');
+      btn.textContent = btn.dataset.label + (copied ? ' · copied' : ' · downloaded');
+    });
+  }
+  const renderVoidChips = () => {
+    voidImgBox.innerHTML = '';
+    if (!last || !last.voids.length) return;
+    const groups = new Map();
+    last.voids.forEach(v => { const k = (v.from || '') + '|' + v.who; if (!groups.has(k)) groups.set(k, []); groups.get(k).push(v); });
+    const cap = document.createElement('span');
+    cap.className = 'chk-chipcap'; cap.textContent = 'Copy image for';
+    voidImgBox.appendChild(cap);
+    groups.forEach(vs => {
+      const who = (vs[0].from ? vs[0].from + ' · ' : '') + vs[0].who;
+      const btn = document.createElement('button');
+      btn.type = 'button'; btn.className = 'ghost chk-chip';
+      btn.dataset.label = who + ' (' + vs.length + ')';
+      btn.textContent = btn.dataset.label;
+      btn.addEventListener('click', () => copyVoidImage(vs, btn));
+      voidImgBox.appendChild(btn);
+    });
+  };
+
+  const ctxBlock = (b, label, hl) => !b ? '' :
+    '<div class="chk-ctx"><div class="chk-ctxh">' + label + ' · ' + (b.sender ? 'from ' + esc(b.sender) + ' · ' : '') + esc([...new Set(b.lines.map(l => l.who))].join(' → ')) + ' · ' + b.lines.length + ' lines</div>' +
+    '<div class="chk-ctxbody">' + b.lines.map(l => '<div class="' + (l.ln === hl ? 'bad' : '') + '">' + esc(l.text) + '</div>').join('') + '</div></div>';
+
+  const openCtx = new Set();   // entries whose surrounding blocks are expanded (kept across re-renders)
+  const ctxHtml = x => ctxBlock(last.blocks[x.bi - 1], 'before', null) + ctxBlock(last.blocks[x.bi], 'this block', x.ln) + ctxBlock(last.blocks[x.bi + 1], 'after', null);
+
+  const list = (items, cls, kind) => items.length
+    ? '<div class="chk-list">' + items.map(x => {
+        const key = kind + x.ln, open = openCtx.has(key);
+        return '<div class="chk-item ' + cls + '"><div class="chk-meta">line ' + x.ln + ' · ' + esc(x.who) + (x.from ? ' · from ' + esc(x.from) : '') + '</div>' +
+          '<div class="chk-line">' + esc(x.text) + '</div>' + (whyEl.checked && x.why ? '<div class="chk-msg">' + esc(x.why) + '</div>' : '') +
+          '<details class="chk-more" data-k="' + key + '" data-kind="' + kind + '" data-ln="' + x.ln + '"' + (open ? ' open' : '') + '><summary>Show surrounding blocks</summary>' +
+          '<div class="chk-ctxwrap">' + (open ? ctxHtml(x) : '') + '</div></details></div>';
+      }).join('') + '</div>'
+    : '<p class="empty-ledger chk-ok">— none —</p>';
+
+  const renderLists = () => {
+    if (!last) return;
+    voidBox.innerHTML = list(last.voids, '', 'v');
+    checkBox.innerHTML = list(last.checks, 'check', 'c');
+  };
+  whyEl.addEventListener('change', renderLists);
+
+  // each entry opens/closes its own surrounding blocks; the content is built when opened
+  const onToggle = e => {
+    const d = e.target;
+    if (!d.matches || !d.matches('details.chk-more')) return;
+    if (d.open){
+      openCtx.add(d.dataset.k);
+      const wrap = d.querySelector('.chk-ctxwrap');
+      if (!wrap.innerHTML){
+        const x = (d.dataset.kind === 'v' ? last.voids : last.checks).find(i => String(i.ln) === d.dataset.ln);
+        if (x) wrap.innerHTML = ctxHtml(x);
+      }
+    } else openCtx.delete(d.dataset.k);
+  };
+  voidBox.addEventListener('toggle', onToggle, true);
+  checkBox.addEventListener('toggle', onToggle, true);
+
+  document.getElementById('check-runBtn').addEventListener('click', () => {
+    last = analyze(dumpEl.value);
+    openCtx.clear();
+    const { voids, checks, owners, bets } = last;
+    hintEl.textContent = bets + ' bets counted · ' + voids.length + ' voided · ' + checks.length + ' to check';
+    hintEl.className = (voids.length || checks.length) ? 'hint warn' : 'hint';
+    renderLists();
+    renderVoidChips();
+
+    if (!owners.size){ sumBox.innerHTML = '<p class="empty-ledger">— no bets found —</p>'; return; }
+    let grand = 0, rows = '';
+    owners.forEach((o, name) => {
+      grand += o.total;
+      rows += '<div class="chk-row"><span>' + esc(name) + '</span><span class="n">' + o.count + ' bets · R ' + o.r + ' · S ' + o.s +
+              '</span><span class="t">' + o.total.toLocaleString('en-US') + '</span></div>';
+    });
+    rows += '<div class="chk-row grand"><span>GRAND TOTAL</span><span class="t">' + grand.toLocaleString('en-US') + '</span></div>';
+    sumBox.innerHTML = rows;
+  });
+
+  document.getElementById('check-clearBtn').addEventListener('click', () => {
+    dumpEl.value = ''; last = null; openCtx.clear();
+    hintEl.textContent = 'nothing checked yet'; hintEl.className = 'hint';
+    const none = '<p class="empty-ledger">— nothing checked yet —</p>';
+    voidBox.innerHTML = none; checkBox.innerHTML = none; sumBox.innerHTML = none; voidImgBox.innerHTML = '';
   });
 })();
 </script>
